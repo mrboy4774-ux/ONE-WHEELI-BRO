@@ -1,1 +1,24 @@
 <h1>ONE-WHEELI-BRO</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Game</title>
+    <style>
+        body { text-align: center; font-family: sans-serif; margin-top: 50px; }
+        #clicker { padding: 20px 40px; font-size: 20px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Clicker Game</h1>
+    <p>Score: <span id="score">0</span></p>
+    <button id="clicker" onclick="increaseScore()">Click Me!</button>
+
+    <script>
+        let score = 0;
+        function increaseScore() {
+            score++;
+            document.getElementById('score').innerText = score;
+        }
+    </script>
+</body>
+</html>

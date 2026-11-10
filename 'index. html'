@@ -1,33 +1,35 @@
-<h1>ONE-WHEELI-BRO</h1
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Level Game</title>
-    <style>
-        body { text-align: center; font-family: sans-serif; margin-top: 50px; }
-        #clicker { padding: 20px 40px; font-size: 20px; cursor: pointer; }
-    </style>
+<title>Bike Stunt Game</title>
+<style>
+body { text-align: center; font-family: sans-serif; margin-top: 50px; }
+.btn { padding: 15px 30px; font-size: 18px; margin: 10px; cursor: pointer; }
+</style>
 </head>
 <body>
-    <h1>Level Game</h1>
-    <p>Level: <span id="level">1</span></p>
-    <p>Score: <span id="score">0</span></p>
-    <button id="clicker" onclick="playGame()">Click Me!</button>
-
-    <script>
-        let score = 0;
-        let level = 1;
-        function playGame() {
-            score++;
-            if (score >= level * 10) {
-                level++;
-                alert("Level Up! Welcome to Level " + level);
-            }
-            document.getElementById('score').innerText = score;
-            document.getElementById('level').innerText = level;
-        }
-    </script>
+<h1>Bike Stunt Game</h1>
+<p>Earned Cash: ₹<span id="cash">0</span></p>
+<p>Bike Level: <span id="level">1</span></p>
+<button class="btn" onclick="performStunt()">Do Stunt (+₹1)</button>
+<button class="btn" onclick="simulatePayment()">Pay ₹5 to Upgrade Level</button>
+<script>
+let cash = 0;
+let level = 1;
+function performStunt() {
+cash += 1;
+document.getElementById('cash').innerText = cash;
+}
+function simulatePayment() {
+if (confirm("Proceed to pay ₹5 for Level Upgrade?")) {
+level += 1;
+document.getElementById('level').innerText = level;
+alert("Payment Successful! Level Upgraded.");
+}
+}
+</script>
 </body>
 </html>
+
 
 

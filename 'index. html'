@@ -1,24 +1,33 @@
-<h1>ONE-WHEELI-BRO</h1>
+<h1>ONE-WHEELI-BRO</h1
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Simple Game</title>
+    <title>Level Game</title>
     <style>
         body { text-align: center; font-family: sans-serif; margin-top: 50px; }
         #clicker { padding: 20px 40px; font-size: 20px; cursor: pointer; }
     </style>
 </head>
 <body>
-    <h1>Clicker Game</h1>
+    <h1>Level Game</h1>
+    <p>Level: <span id="level">1</span></p>
     <p>Score: <span id="score">0</span></p>
-    <button id="clicker" onclick="increaseScore()">Click Me!</button>
+    <button id="clicker" onclick="playGame()">Click Me!</button>
 
     <script>
         let score = 0;
-        function increaseScore() {
+        let level = 1;
+        function playGame() {
             score++;
+            if (score >= level * 10) {
+                level++;
+                alert("Level Up! Welcome to Level " + level);
+            }
             document.getElementById('score').innerText = score;
+            document.getElementById('level').innerText = level;
         }
     </script>
 </body>
 </html>
+
+

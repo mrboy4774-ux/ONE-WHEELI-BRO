@@ -1,35 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Bike Stunt Game</title>
-<style>
-body { text-align: center; font-family: sans-serif; margin-top: 50px; }
-.btn { padding: 15px 30px; font-size: 18px; margin: 10px; cursor: pointer; }
-</style>
+    <title>Bike Stunt Game</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: sans-serif;
+            margin-top: 50px;
+        }
+        .btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-<h1>Bike Stunt Game</h1>
-<p>Earned Cash: ₹<span id="cash">0</span></p>
-<p>Bike Level: <span id="level">1</span></p>
-<button class="btn" onclick="performStunt()">Do Stunt (+₹1)</button>
-<button class="btn" onclick="simulatePayment()">Pay ₹5 to Upgrade Level</button>
-<script>
-let cash = 0;
-let level = 1;
-function performStunt() {
-cash += 1;
-document.getElementById('cash').innerText = cash;
-}
-function simulatePayment() {
-if (confirm("Proceed to pay ₹5 for Level Upgrade?")) {
-level += 1;
-document.getElementById('level').innerText = level;
-alert("Payment Successful! Level Upgraded.");
-}
-}
-</script>
+
+    <h1>Bike Stunt Game</h1>
+    <p>Earned Cash: ₹<span id="cash">0</span></p>
+    <p>Bike Level: <span id="level">1</span></p>
+    
+    <button class="btn" onclick="performStunt()">Do Stunt (+₹1)</button>
+    <button class="btn" onclick="simulatePayment()">Pay ₹12 for Level Upgrade</button>
+
+    <script>
+        let cash = 0;
+        let level = 1;
+
+        function performStunt() {
+            cash += 1;
+            document.getElementById('cash').innerText = cash;
+        }
+
+        function simulatePayment() {
+            if (confirm("Proceed to pay ₹12 for Level Upgrade?")) {
+                if (cash >= 12) {
+                    cash -= 12;
+                    level += 1;
+                    document.getElementById('cash').innerText = cash;
+                    document.getElementById('level').innerText = level;
+                    alert("Payment Successful! Level Upgraded.");
+                } else {
+                    alert("Not enough cash! Perform more stunts.");
+                }
+            }
+        }
+    </script>
 </body>
 </html>
-
-
 

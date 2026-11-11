@@ -1,52 +1,225 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bike Stunt Game</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
         body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e2f, #111119);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .game-card {
+            background: #282a36;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            width: 100%;
+            max-width: 420px;
             text-align: center;
-            font-family: sans-serif;
-            margin-top: 50px;
+            border: 1px solid #44475a;
+        }
+        h1 {
+            color: #ff79c6;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        .info-panel {
+            background: #44475a;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        .info-panel p {
+            font-size: 16px;
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .info-panel span {
+            font-weight: bold;
+            color: #50fa7b;
         }
         .btn {
-            padding: 15px 30px;
-            font-size: 18px;
-            margin: 10px;
+            background-color: #bd93f9;
+            color: #282a36;
+            border: none;
+            border-radius: 8px;
+            padding: 15px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            margin-bottom: 12px;
             cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .btn-upgrade {
+            background-color: #ffb86c;
+        }
+        .btn-audio {
+            background-color: #ff5555;
+            color: #ffffff;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
-    <h1>Bike Stunt Game</h1>
-    <p>Earned Cash: ₹<span id="cash">0</span></p>
-    <p>Bike Level: <span id="level">1</span></p>
-    
-    <button class="btn" onclick="performStunt()">Do Stunt (+₹1)</button>
-    <button class="btn" onclick="simulatePayment()">Pay ₹12 for Level Upgrade</button>
+    <div class="game-card">
+        <h1>🚴 Bike Stunt Game</h1>
+        
+        <div class="info-panel">
+            <p>Player: <span id="playerName">Rider</span></p>
+            <p>Earned Cash: ₹<span id="cash">0</span></p>
+            <p>Bike Level: <span id="level">1</span></p>
+        </div>
+
+        <button class="btn" onclick="performStunt()"> Do Stunt (+₹1)</button>
+        <button class="btn btn-upgrade" onclick="simulatePayment()"> Pay ₹12 for Level Upgrade</button>
+        <button class="btn btn-audio" id="audioBtn" onclick="toggleAudio()"> Mute Music</button>
+    </div>
 
     <script>
         let cash = 0;
         let level = 1;
+        let playerName = "";
+
+        // Prompt for player name
+        window.onload = function() {
+            playerName = prompt("Enter Player Name:", "Rider");
+            if (!playerName || playerName.trim() === "") {
+                playerName = "Rider";
+            }
+            document.getElementById("playerName").innerText = playerName;
+            initAudio();
+        };
 
         function performStunt() {
             cash += 1;
             document.getElementById('cash').innerText = cash;
+            playStuntSound();
         }
 
         function simulatePayment() {
-            if (confirm("Proceed to pay ₹12 for Level Upgrade?")) {
-                if (cash >= 12) {
+            if (cash >= 12) {
+                if (confirm(playerName + ", proceed to pay ₹12 for Level Upgrade?")) {
                     cash -= 12;
                     level += 1;
                     document.getElementById('cash').innerText = cash;
                     document.getElementById('level').innerText = level;
-                    alert("Payment Successful! Level Upgraded.");
-                } else {
-                    alert("Not enough cash! Perform more stunts.");
+                    playUpgradeSound();
+                    alert("Payment Successful! Level Upgraded to Level " + level);
                 }
+            } else {
+                alert("Not enough cash! You need ₹12. Perform more stunts!");
             }
         }
+
+        // Web Audio API Synth Engine
+        let audioCtx;
+        let isMuted = false;
+        let musicInterval;
+
+        function initAudio() {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContext();
+            startBackgroundMusic();
+        }
+
+        function startBackgroundMusic() {
+            const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00]; // C4, D4, E4, F4, G4, A4
+            let step = 0;
+
+            musicInterval = setInterval(() => {
+                if (isMuted || !audioCtx) return;
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(notes[step % notes.length], audioCtx.currentTime);
+
+                gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+
+                step++;
+            }, 300);
+        }
+
+        function toggleAudio() {
+            isMuted = !isMuted;
+            document.getElementById('audioBtn').innerText = isMuted ? " Unmute Music" : " Mute Music";
+        }
+
+        function playStuntSound() {
+            if (isMuted || !audioCtx) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.15);
+
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.15);
+        }
+
+        function playUpgradeSound() {
+            if (isMuted || !audioCtx) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            let now = audioCtx.currentTime;
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(523.25, now); // C5
+            osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+            osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(now + 0.4);
+        }
     </script>
-</body> 
-</html/)
+</body>
+</html>
+
+
